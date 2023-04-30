@@ -1,12 +1,20 @@
-import streamlit as st
-from PIL import Image
-import io
-import requests
-import cv2
-import pytesseract
-import numpy as np
-import time
-import doctr
+import importlib
+
+def install_and_import(package):
+    """
+    Install and import a package.
+    """
+    try:
+        importlib.import_module(package)
+    except ImportError:
+        !pip install {package}
+    finally:
+        globals()[package] = importlib.import_module(package)
+
+# Check if required modules are installed and install them if not
+modules = ["streamlit", "PIL", "io", "requests", "cv2", "pytesseract", "numpy", "time", "doctr"]
+for module in modules:
+    install_and_import(module)
 
 # Set up OCR model
 doctr_models = ["us-federalist", "us-constitution", "india-constitution", "uk-constitution"]
