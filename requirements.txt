@@ -1,3 +1,9 @@
 streamlit
+PIL
+io
+requests
+cv2
 pytesseract
-pillow
+numpy as np
+time
+doctr
