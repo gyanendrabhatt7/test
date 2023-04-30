@@ -1,0 +1,9 @@
+streamlit
+PIL
+io
+requests
+cv2
+pytesseract
+numpy as np
+time
+doctr
