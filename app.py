@@ -1,45 +1,19 @@
-# Import necessary libraries
 import streamlit as st
 import pytesseract
-import cv2
-import numpy as np
+from PIL import Image
 
-# Define OCR function
-def ocr_core(img):
-    """
-    This function will handle the core OCR processing of images.
-    """
-    # Preprocess the image
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray = cv2.medianBlur(gray, 3)
-    gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe' # Change this path based on your Tesseract installation
 
-    # Perform OCR using PyTesseract
-    text = pytesseract.image_to_string(gray)
+st.title("OCR with Tesseract")
 
-    return text
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-# Define Streamlit app
-def app():
-    # Set app title
-    st.title("OCR with PyTesseract and OpenCV")
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    st.image(image, caption='Uploaded Image', use_column_width=True)
+    st.write("")
+    st.write("Recognizing...")
 
-    # Create file uploader
-    uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+    text = pytesseract.image_to_string(image)
 
-    # Check if file has been uploaded
-    if uploaded_file is not None:
-        # Convert uploaded file to OpenCV image
-        file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-        img = cv2.imdecode(file_bytes, 1)
-
-        # Perform OCR
-        text = ocr_core(img)
-
-        # Display OCR output
-        st.write("OCR Output:")
-        st.write(text)
-
-# Run app
-if __name__ == "__main__":
-    app()
+    st.write(text)
