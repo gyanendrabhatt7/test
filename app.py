@@ -1,19 +1,38 @@
 import streamlit as st
-import pytesseract
 from PIL import Image
+import io
+import requests
+import cv2
+import pytesseract
+import numpy as np
+import time
+import doctr
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe' # Change this path based on your Tesseract installation
+# Set up OCR model
+doctr_models = ["us-federalist", "us-constitution", "india-constitution", "uk-constitution"]
+model_choice = st.sidebar.selectbox("Choose an OCR model", options=doctr_models)
+model = doctr.models.OCR.create(model_choice)
 
-st.title("OCR with Tesseract")
+# Define Streamlit app layout
+st.title("OCR with Doctr")
+st.header("Upload an image for OCR")
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+# Allow user to upload image file
+file = st.file_uploader("Upload an image file", type=["jpg", "jpeg", "png"])
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Image', use_column_width=True)
-    st.write("")
-    st.write("Recognizing...")
-
-    text = pytesseract.image_to_string(image)
-
-    st.write(text)
+# If an image file has been uploaded, perform OCR and display results
+if file is not None:
+    # Load image file
+    img = Image.open(file)
+    
+    # Display image
+    st.image(img, caption="Uploaded image", use_column_width=True)
+    
+    # Perform OCR on image using Doctr
+    with st.spinner("Performing OCR..."):
+        results = model.predict(img)
+        text = "\n".join([result.text for result in results])
+    
+    # Display OCR results
+    st.subheader("OCR Results")
+    st.text(text)
